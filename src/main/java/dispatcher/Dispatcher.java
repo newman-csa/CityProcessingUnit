@@ -3,7 +3,6 @@ package dispatcher;
 import dispatcher.policies.Policy;
 import driver.Driver;
 import driver.Message;
-import driver.Message.Type;
 import logbook.EventType;
 import trip.Trip;
 
