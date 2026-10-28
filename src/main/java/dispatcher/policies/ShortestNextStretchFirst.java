@@ -6,13 +6,16 @@ import java.util.List;
 
 /**
  * The Shortest Next Stretch First policy.
- * The vehicle that is expected to need the driver for the fewest ticks will be driven next.
+ * The vehicle that is expected to need the driver for the fewest ticks will be
+ * driven next.
  * Trips with the same estimate go in the order they joined the ready line.
  * <p>
- * The expectation is estimated by exponential averaging with the given alpha, going through the trip's stretch
+ * The expectation is estimated by exponential averaging with the given alpha,
+ * going through the trip's stretch
  * lengths ({@code trip.getStretchLengths()}) oldest first:
  * new estimate = alpha * old estimate + (1 - alpha) * length of the stretch.
- * A new trip's estimate starts at 0. If the old estimate is 0, the new estimate is the length of the stretch.
+ * A new trip's estimate starts at 0. If the old estimate is 0, the new estimate
+ * is the length of the stretch.
  * The trip's priority number is not used.
  */
 public class ShortestNextStretchFirst implements Policy {
@@ -25,8 +28,14 @@ public class ShortestNextStretchFirst implements Policy {
 
     @Override
     public Trip pickNext(List<Trip> readyLine) {
-        // TODO
-        return null;
+        Trip highestPriority = readyLine.getFirst();
+
+        for (Trip trip : readyLine) {
+            if (getEstimate(trip) < getEstimate(highestPriority)) {
+                highestPriority = trip;
+            }
+        }
+        return highestPriority;
     }
 
     /**
@@ -36,7 +45,14 @@ public class ShortestNextStretchFirst implements Policy {
      * @return the estimate, or 0 if the trip has not been driven yet
      */
     public double getEstimate(Trip trip) {
-        // TODO
-        return 0;
+        double currentEstimate = 0.0;
+        for (int burstLength : trip.getStretchLengths()) {
+            if (currentEstimate == 0.0) {
+                currentEstimate = burstLength;
+            } else {
+                currentEstimate = alpha * currentEstimate + (1 - alpha) * burstLength;
+            }
+        }
+        return currentEstimate;
     }
 }
